@@ -9,14 +9,32 @@ import {
   Nav,
   Navbar,
 } from "react-bootstrap";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { logout } from "../../actions/userActions";
 
 const Header = () => {
+  const history = useHistory();
+  const dispatch = useDispatch();
+
+  const userLogin = useSelector((state) => state.userLogin);
+  const { userInfo } = userLogin;
+  const username = userInfo?.name.split(" ")[0];
+
+  const logoutHandler = () => {
+    dispatch(logout());
+    history.push("/");
+  };
+
   return (
     <Navbar bg="primary" expand="md" className="">
       <Container direction="horizontal">
         <Navbar.Brand style={{ color: "#fff" }}>
-          <Link to="/" style={{textDecoration:'none'}}>Note Keep</Link>
+          <Link to="/" style={{ textDecoration: "none" }}>
+            Note Keep
+          </Link>
         </Navbar.Brand>
 
         <Navbar.Toggle aria-controls="navbarScroll" />
@@ -40,14 +58,16 @@ const Header = () => {
                 My Notes
               </Link>
             </Nav.Link>
-            <DropdownButton
-              variant="outline-secondary"
-              title="Sirajul"
-              id="input-group-dropdown-1"
-            >
-              <Dropdown.Item href="#">Profile</Dropdown.Item> 
-              <Dropdown.Item href="#">Logout</Dropdown.Item>
-            </DropdownButton>
+            {userInfo && (
+              <DropdownButton
+                variant="outline-secondary"
+                title={username}
+                id="input-group-dropdown-1"
+              >
+                <Dropdown.Item href="#">Profile</Dropdown.Item>
+                <Dropdown.Item onClick={logoutHandler}>Logout</Dropdown.Item>
+              </DropdownButton>
+            )}
           </Nav>
         </Navbar.Collapse>
       </Container>
