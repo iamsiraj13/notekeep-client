@@ -38,7 +38,7 @@ export const noteCreateReducer = ( state={}, action )=>{
     }
 }
 
-export const noteuUpdateReducer = ( state={}, action )=>{
+export const noteUpdateReducer = ( state={}, action )=>{
     switch ( action.type ) {
         case NOTE_UPDATE_REQUEST: 
          return { loading: true }

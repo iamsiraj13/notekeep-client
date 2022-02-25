@@ -11,8 +11,7 @@ import {
 } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import { useHistory } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { Link,useHistory } from "react-router-dom"; 
 import { logout } from "../../actions/userActions";
 
 const Header = ({ setSearch }) => {
@@ -67,7 +66,7 @@ const Header = ({ setSearch }) => {
                 title={username}
                 id="input-group-dropdown-1"
               >
-                <Dropdown.Item href="#">Profile</Dropdown.Item>
+                 <Dropdown.Item ><Link to="/profile">Profile</Link></Dropdown.Item> 
                 <Dropdown.Item onClick={logoutHandler}>Logout</Dropdown.Item>
               </DropdownButton>
             )}

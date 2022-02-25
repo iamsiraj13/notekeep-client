@@ -8,6 +8,7 @@ import LoginPage from "./pages/LoginPage/LoginPage";
 import MyNotes from "./pages/MyNotes/MyNotes";
 import RegisterPage from "./pages/RegisterPage/RegisterPage";
 import SingleNote from "./pages/SingleNote/SingleNote";
+import ProfilePage from './pages/ProfilePage/ProfilePage'
 
 function App() {
 
@@ -34,6 +35,9 @@ function App() {
           </Route>
           <Route path="/note/:editId">
             <SingleNote/>
+          </Route>
+          <Route path="/profile">
+            <ProfilePage/>
           </Route>
         </Switch>
       </main>
