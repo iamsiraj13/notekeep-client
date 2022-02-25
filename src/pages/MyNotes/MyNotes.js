@@ -1,34 +1,57 @@
 import axios from "axios";
-import React, { useEffect,useState } from "react";
+import React, { useEffect } from "react";
 import { Button, Card, Badge, Accordion } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Link,useHistory } from "react-router-dom";
+import { deleteNoteAction, listNotes } from "../../actions/notesAction";
+import ErrorMessage from "../../components/ErrorMessage";
+import Loading from "../../components/Loading";
 import MainLayout from "../../components/MainLayout";
 
+const MyNotes = ({ search }) => {
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const noteList = useSelector((state) => state.noteList);
+  const { loading, notes, error } = noteList;
 
-const MyNotes = () => {
+  const userLogin = useSelector((state) => state.userLogin);
+  const { userInfo } = userLogin;
 
-  const [ notes, setNotes ] = useState([]);
+  const noteCreate = useSelector((state) => state.noteCreate);
+  const { success:successCreate } = noteCreate;
 
-  const deleteHandler = (id) => {
-    if(window.confirm("Are you sure ?")){
-      alert("Deleted Successfull")
-    }
-  };
+  const noteUpdate = useSelector((state) => state.noteUpdate);
+  const { success: successUpdate } = noteUpdate;
+
+  const noteDelete = useSelector((state) => state.noteDelete);
+  const { loading:loadingDelete, error: errorDelete , success: successDelete } = noteDelete;
 
   
-  const fetchNotes = async()=>{
-      const {data} = await axios.get('http://localhost:5000/api/notes')
-      setNotes(data);
-  }
-  useEffect(()=>{
-    fetchNotes();
-  },[]);
+
+  useEffect(() => {
+    dispatch(listNotes());
+    if( !userInfo ){
+      history.push("/");
+    }
+  }, [dispatch, successCreate, userInfo,history,successUpdate,successDelete]);
+  
+  const deleteHandler = (id) => {
+    if (window.confirm("Are you sure ?")) {
+      dispatch(deleteNoteAction(id));
+    }
+  };
+  
   return (
-    <MainLayout title="Welcome Back Sirajul">
+    <MainLayout title={`Welcome Back ${userInfo.name}`}>
       <Link to="createnote">
         <Button size="lg">Create New Note</Button>
       </Link>
-      {notes.map((note) => (
+      {error && <ErrorMessage variant="danger">{error}</ErrorMessage>}
+      { errorDelete && <ErrorMessage>{errorDelete}</ErrorMessage>}
+      {loading && <Loading />}
+      {notes?.reverse().filter((filteredNote)=>(
+        filteredNote.title.toLowerCase().includes(search.toLowerCase())
+      )).map((note) => (
         <Accordion key={note._id}>
           <Card className="my-2">
             <Card.Header
@@ -45,17 +68,12 @@ const MyNotes = () => {
                   fontSize: 18,
                 }}
               >
-                
-                <Accordion.Toggle
-                      as={Card.Text}
-                      variant="link"
-                      eventKey="0"
-                    >
-                      {note.title}
-                    </Accordion.Toggle>
+                <Accordion.Toggle as={Card.Text} variant="link" eventKey="0">
+                  {note.title}
+                </Accordion.Toggle>
               </span>
               <div>
-                <Button href={`/note/${note._id}`}>Edit</Button>
+                <Link to={`/note/${note._id}`}><Button >Edit</Button></Link>
                 <Button
                   variant="danger"
                   className="mx-2"
@@ -66,18 +84,21 @@ const MyNotes = () => {
               </div>
             </Card.Header>
             <Accordion.Collapse eventKey="0">
-            <Card.Body>
-              <h4>
-                <strong>Category</strong>
-                <Badge variant="success">-{note.category}</Badge>
-              </h4>
-              <blockquote className="blockquote mb-0">
-                <p>{note.content}</p>
-                <footer className="blockquote-footer">
-                  Created on 12/2/22
-                </footer>
-              </blockquote>
-            </Card.Body>
+              <Card.Body>
+                <h4>
+                  <strong>Category</strong>
+                  <Badge variant="success">-{note.category}</Badge>
+                </h4>
+                <blockquote className="blockquote mb-0">
+                  <p>{note.content}</p>
+                  <footer className="blockquote-footer">
+                    Created on {" "}
+                    <cite title="Source Title">
+                      {note.createdAt.substring(0,10)}
+                    </cite>
+                  </footer>
+                </blockquote>
+              </Card.Body>
             </Accordion.Collapse>
           </Card>
         </Accordion>

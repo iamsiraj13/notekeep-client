@@ -15,7 +15,7 @@ import { useHistory } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { logout } from "../../actions/userActions";
 
-const Header = () => {
+const Header = ({ setSearch }) => {
   const history = useHistory();
   const dispatch = useDispatch();
 
@@ -27,6 +27,8 @@ const Header = () => {
     dispatch(logout());
     history.push("/");
   };
+
+  
 
   return (
     <Navbar bg="primary" expand="md" className="">
@@ -45,8 +47,9 @@ const Header = () => {
               placeholder="Search"
               className="ms-2"
               aria-label="Search"
+              onChange={(e)=>setSearch(e.target.value)}
             />
-            <Button variant="dark">Search</Button>
+            <Button variant="dark" type="submit">Search</Button>
           </Form>
           <Nav
             className="m-auto my-2 my-lg-0"
